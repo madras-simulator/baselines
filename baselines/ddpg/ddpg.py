@@ -51,7 +51,7 @@ def learn(network, env,
 
     rank = MPI.COMM_WORLD.Get_rank()
     nb_actions = env.action_space.shape[-1]
-    assert (np.abs(env.action_space.low) == env.action_space.high).all()  # we assume symmetric actions.
+    #assert (np.abs(env.action_space.low) == env.action_space.high).all()  # we assume symmetric actions.
 
     memory = Memory(limit=int(1e6), action_shape=env.action_space.shape, observation_shape=env.observation_space.shape)
     critic = Critic(network=network, **network_kwargs)
