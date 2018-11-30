@@ -43,7 +43,7 @@ def learn(network, env,
           eval_env=None,
           param_noise_adaption_interval=50,
           load_path = None,
-          save_path = '<specify/path>'
+          save_path = '<specify/path>',
           **network_kwargs):
 
     set_global_seeds(seed)
@@ -274,7 +274,7 @@ def learn(network, env,
                 with open(os.path.join(logdir, 'eval_env_state.pkl'), 'wb') as f:
                     pickle.dump(eval_env.get_state(), f)
 
-            os.mkdirs(logdir,exist_ok=True)
+            os.makdirs(logdir,exist_ok=True)
             savepath = os.path.join(save_path, str(epoch))
             print('Saving to ',savepath)
             agent.save(savepath)
