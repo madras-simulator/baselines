@@ -274,9 +274,9 @@ def learn(network, env,
                 with open(os.path.join(logdir, 'eval_env_state.pkl'), 'wb') as f:
                     pickle.dump(eval_env.get_state(), f)
 
-            os.makdirs(logdir,exist_ok=True)
+            os.makedirs(logdir, exist_ok=True)
             savepath = os.path.join(save_path, str(epoch))
-            print('Saving to ',savepath)
+            print('Saving to ', savepath)
             agent.save(savepath)
 
 
