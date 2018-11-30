@@ -42,6 +42,8 @@ def learn(network, env,
           tau=0.01,
           eval_env=None,
           param_noise_adaption_interval=50,
+          load_path = None,
+          save_path = '<specify/path>'
           **network_kwargs):
 
     set_global_seeds(seed)
@@ -91,6 +93,9 @@ def learn(network, env,
         batch_size=batch_size, action_noise=action_noise, param_noise=param_noise, critic_l2_reg=critic_l2_reg,
         actor_lr=actor_lr, critic_lr=critic_lr, enable_popart=popart, clip_norm=clip_norm,
         reward_scale=reward_scale)
+
+    if load_path is not None:
+        agent.load(load_path)
     logger.info('Using agent with the following configuration:')
     logger.info(str(agent.__dict__.items()))
 
@@ -268,6 +273,11 @@ def learn(network, env,
             if eval_env and hasattr(eval_env, 'get_state'):
                 with open(os.path.join(logdir, 'eval_env_state.pkl'), 'wb') as f:
                     pickle.dump(eval_env.get_state(), f)
+
+            os.mkdirs(logdir,exist_ok=True)
+            savepath = os.path.join(save_path, str(epoch))
+            print('Saving to ',savepath)
+            agent.save(savepath)
 
 
     return agent
