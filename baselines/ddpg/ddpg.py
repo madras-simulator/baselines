@@ -63,7 +63,6 @@ def learn(network, env,
 
     nb_actions = env.action_space.shape[-1]
     #assert (np.abs(env.action_space.low) == env.action_space.high).all()  # we assume symmetric actions.
-    sess = U.get_session()
     memory = Memory(limit=int(1e6), action_shape=env.action_space.shape, observation_shape=env.observation_space.shape)
     critic = Critic(network=network, **network_kwargs)
     actor = Actor(nb_actions, network=network, **network_kwargs)
@@ -102,9 +101,12 @@ def learn(network, env,
     eval_episode_rewards_history = deque(maxlen=100)
     episode_rewards_history = deque(maxlen=100)
     # Prepare everything.
+    sess = U.get_session()
     agent.initialize(sess)
+    checkpoint_num = 0
     if load_path is not None:
         agent.load(load_path)
+        checkpoint_num = int(os.path.split(load_path)[1]) + 1
     sess.graph.finalize()
 
     agent.reset()
@@ -277,7 +279,7 @@ def learn(network, env,
                 with open(os.path.join(logdir, 'eval_env_state.pkl'), 'wb') as f:
                     pickle.dump(eval_env.get_state(), f)
 
-            savepath = os.path.join(save_path, str(epoch))
+            savepath = os.path.join(save_path, str(epoch+checkpoint_num))
             print('Saving to ', savepath)
             agent.save(savepath)
 
