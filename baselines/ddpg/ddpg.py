@@ -43,9 +43,11 @@ def learn(network, env,
           eval_env=None,
           param_noise_adaption_interval=50,
           load_path = None,
-          save_path = '<specify/path>',
+          save_path = '/home/sohan/check1',
           **network_kwargs):
 
+    print("Save PATH;{}".format(save_path))
+    print("Load PATH;{}".format(load_path))
     set_global_seeds(seed)
 
     if total_timesteps is not None:
@@ -61,7 +63,7 @@ def learn(network, env,
 
     nb_actions = env.action_space.shape[-1]
     #assert (np.abs(env.action_space.low) == env.action_space.high).all()  # we assume symmetric actions.
-
+    sess = U.get_session()
     memory = Memory(limit=int(1e6), action_shape=env.action_space.shape, observation_shape=env.observation_space.shape)
     critic = Critic(network=network, **network_kwargs)
     actor = Actor(nb_actions, network=network, **network_kwargs)
@@ -94,16 +96,15 @@ def learn(network, env,
         actor_lr=actor_lr, critic_lr=critic_lr, enable_popart=popart, clip_norm=clip_norm,
         reward_scale=reward_scale)
 
-    if load_path is not None:
-        agent.load(load_path)
     logger.info('Using agent with the following configuration:')
     logger.info(str(agent.__dict__.items()))
 
     eval_episode_rewards_history = deque(maxlen=100)
     episode_rewards_history = deque(maxlen=100)
-    sess = U.get_session()
     # Prepare everything.
     agent.initialize(sess)
+    if load_path is not None:
+        agent.load(load_path)
     sess.graph.finalize()
 
     agent.reset()
@@ -129,6 +130,8 @@ def learn(network, env,
     epoch_actions = []
     epoch_qs = []
     epoch_episodes = 0
+    if load_path is None:
+        os.makedirs(save_path, exist_ok=True)
     for epoch in range(nb_epochs):
         for cycle in range(nb_epoch_cycles):
             # Perform rollouts.
@@ -274,7 +277,6 @@ def learn(network, env,
                 with open(os.path.join(logdir, 'eval_env_state.pkl'), 'wb') as f:
                     pickle.dump(eval_env.get_state(), f)
 
-            os.makedirs(logdir, exist_ok=True)
             savepath = os.path.join(save_path, str(epoch))
             print('Saving to ', savepath)
             agent.save(savepath)
