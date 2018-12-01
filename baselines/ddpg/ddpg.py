@@ -43,7 +43,7 @@ def learn(network, env,
           eval_env=None,
           param_noise_adaption_interval=50,
           load_path = None,
-          save_path = '/home/sohan/check1',
+          save_path = '<specify/path>',
           **network_kwargs):
 
     print("Save PATH;{}".format(save_path))
