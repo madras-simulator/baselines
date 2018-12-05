@@ -1,6 +1,7 @@
 from copy import copy
 from functools import reduce
 
+import functools
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib as tc
@@ -9,6 +10,7 @@ from baselines import logger
 from baselines.common.mpi_adam import MpiAdam
 import baselines.common.tf_util as U
 from baselines.common.mpi_running_mean_std import RunningMeanStd
+from baselines.common.tf_util import save_variables, load_variables
 try:
     from mpi4py import MPI
 except ImportError:
@@ -98,6 +100,8 @@ class DDPG(object):
         self.batch_size = batch_size
         self.stats_sample = None
         self.critic_l2_reg = critic_l2_reg
+        self.save = None
+        self.load = None
 
         # Observation normalization.
         if self.normalize_observations:
@@ -333,6 +337,8 @@ class DDPG(object):
     def initialize(self, sess):
         self.sess = sess
         self.sess.run(tf.global_variables_initializer())
+        self.save = functools.partial(save_variables, sess=self.sess)
+        self.load = functools.partial(load_variables, sess=self.load)
         self.actor_optimizer.sync()
         self.critic_optimizer.sync()
         self.sess.run(self.target_init_updates)

@@ -5,7 +5,7 @@ import gym
 from collections import defaultdict
 import tensorflow as tf
 import numpy as np
-
+import MADRaS
 from baselines.common.vec_env.vec_video_recorder import VecVideoRecorder
 from baselines.common.vec_env.vec_frame_stack import VecFrameStack
 from baselines.common.cmd_util import common_arg_parser, parse_unknown_args, make_vec_env, make_env
@@ -50,7 +50,7 @@ _game_envs['retro'] = {
     'SpaceInvaders-Snes',
 }
 
-
+_game_envs['madras'] = {'gym-torcs-v0','gym-madras-v0'}
 def train(args, extra_args):
     env_type, env_id = get_env_type(args.env)
     print('env_type: {}'.format(env_type))
