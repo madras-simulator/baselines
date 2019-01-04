@@ -58,6 +58,20 @@ def mlp(num_layers=2, num_hidden=64, activation=tf.tanh, layer_norm=False):
 
     return network_fn
 
+@register("mynn")
+def mynn(num_layers=2, num_hidden=[300,500], activation=tf.tanh, layer_norm=False):
+    def network_fn(X):
+        h = tf.layers.flatten(X)
+        for i in range(num_layers):
+            h = fc(h, 'mlp_fc{}'.format(i), nh=num_hidden[i], init_scale=np.sqrt(2))
+            if layer_norm:
+                h = tf.contrib.layers.layer_norm(h, center=True, scale=True)
+            h = activation(h)
+
+        return h
+
+    return network_fn
+    
 
 @register("cnn")
 def cnn(**conv_kwargs):

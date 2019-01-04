@@ -78,6 +78,11 @@ class SubprocVecEnv(VecEnv):
             remote.send(('reset', None))
         return np.stack([remote.recv() for remote in self.remotes])
 
+    def reset_envno(self,no):
+        self._assert_not_closed()        
+        self.remotes[no].send(('reset', None))     
+        return self.remotes[no].recv()
+
     def close_extras(self):
         self.closed = True
         if self.waiting:

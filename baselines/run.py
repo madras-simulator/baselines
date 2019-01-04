@@ -50,7 +50,7 @@ _game_envs['retro'] = {
     'SpaceInvaders-Snes',
 }
 
-_game_envs['madras'] = {'gym-torcs-v0','gym-madras-v0'}
+_game_envs['madras'] = {'Madras-v0'}
 def train(args, extra_args):
     env_type, env_id = get_env_type(args.env)
     print('env_type: {}'.format(env_type))
@@ -88,6 +88,7 @@ def build_env(args):
     ncpu = multiprocessing.cpu_count()
     if sys.platform == 'darwin': ncpu //= 2
     nenv = args.num_env or ncpu
+    print('Found %d CPUs'%(nenv))
     alg = args.alg
     seed = args.seed
 
@@ -196,7 +197,7 @@ def main(args):
         rank = MPI.COMM_WORLD.Get_rank()
 
     model, env = train(args, extra_args)
-    env.close()
+    # env.close()
 
     if args.save_path is not None and rank == 0:
         save_path = osp.expanduser(args.save_path)
@@ -204,15 +205,16 @@ def main(args):
 
     if args.play:
         logger.log("Running trained model")
-        env = build_env(args)
+        # env = build_env(args)
         obs = env.reset()
         def initialize_placeholders(nlstm=128,**kwargs):
             return np.zeros((args.num_env or 1, 2*nlstm)), np.zeros((1))
         state, dones = initialize_placeholders(**extra_args)
         while True:
             actions, _, state, _ = model.step(obs,S=state, M=dones)
+            # actions, _, state, _ = model.step(obs)
             obs, _, done, _ = env.step(actions)
-            env.render()
+            # env.render()
             done = done.any() if isinstance(done, np.ndarray) else done
 
             if done:
