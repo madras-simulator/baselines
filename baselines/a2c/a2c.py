@@ -118,7 +118,7 @@ def learn(
     network,
     env,
     seed=None,
-    nsteps=5,
+    nsteps=20,
     total_timesteps=int(80e6),
     vf_coef=0.5,
     ent_coef=0.01,
@@ -187,6 +187,7 @@ def learn(
     nenvs = env.num_envs
     policy = build_policy(env, network, **network_kwargs)
 
+    print('Parallel %d number'%(nenvs)) 
     # Instantiate the model object (that creates step_model and train_model)
     model = Model(policy=policy, env=env, nsteps=nsteps, ent_coef=ent_coef, vf_coef=vf_coef,
         max_grad_norm=max_grad_norm, lr=lr, alpha=alpha, epsilon=epsilon, total_timesteps=total_timesteps, lrschedule=lrschedule)
